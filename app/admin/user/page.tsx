@@ -2,6 +2,7 @@ import { GetUser } from "@/lib/user";
 import { User } from "@/types/user";
 import { Clock3 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 const UserPage = async () => {
   const result = await GetUser();
 

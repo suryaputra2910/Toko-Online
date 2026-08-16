@@ -1,6 +1,7 @@
 import { GetUser } from "@/lib/user";
 import { User } from "@/types/user";
 
+export const dynamic = "force-dynamic";
 const DashboardPage = async () => {
   const result = await GetUser();
 

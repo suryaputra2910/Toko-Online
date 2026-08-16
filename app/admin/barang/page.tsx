@@ -2,6 +2,8 @@ import { URL_IMAGE } from "@/global";
 import { GetBarang } from "@/services/barang";
 import FormBarang from "./formbarang";
 
+export const dynamic = "force-dynamic";
+
 const BarangPage = async () => {
   const { data } = await GetBarang();
 
