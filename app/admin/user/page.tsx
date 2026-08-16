@@ -1,10 +1,19 @@
 import { GetUser } from "@/lib/user";
 import { User } from "@/types/user";
+import { Clock3 } from "lucide-react";
 
 const UserPage = async () => {
   const result = await GetUser();
 
   const users: User[] = result.data ?? [];
+
+  const recentUsers = [...users]
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() -
+        new Date(a.created_at).getTime()
+    )
+    .slice(0, 5);
 
   return (
     <div className="min-h-screen bg-[#09090b] p-6 text-white md:p-10">
@@ -32,7 +41,7 @@ const UserPage = async () => {
           </p>
         </div>
 
-        {/* Table */}
+        {/* User Table */}
         <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60">
 
           <div className="overflow-x-auto">
@@ -76,10 +85,12 @@ const UserPage = async () => {
                     className="transition hover:bg-zinc-800/40"
                   >
 
+                    {/* No */}
                     <td className="px-6 py-4 text-sm text-zinc-500">
                       {index + 1}
                     </td>
 
+                    {/* Name */}
                     <td className="px-6 py-4">
                       <div className="font-medium text-white">
                         {user.name}
@@ -90,10 +101,12 @@ const UserPage = async () => {
                       </div>
                     </td>
 
+                    {/* Email */}
                     <td className="px-6 py-4 text-sm text-zinc-400">
                       {user.email}
                     </td>
 
+                    {/* Role */}
                     <td className="px-6 py-4">
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-medium ${
@@ -108,6 +121,7 @@ const UserPage = async () => {
                       </span>
                     </td>
 
+                    {/* Status */}
                     <td className="px-6 py-4">
                       {user.email_verified_at ? (
                         <span className="text-xs text-emerald-400">
@@ -120,21 +134,22 @@ const UserPage = async () => {
                       )}
                     </td>
 
+                    {/* Registered */}
                     <td className="px-6 py-4 text-sm text-zinc-500">
-                      {new Date(user.created_at).toLocaleDateString(
-                        "id-ID",
-                        {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        }
-                      )}
+                      {new Date(
+                        user.created_at
+                      ).toLocaleDateString("id-ID", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </td>
 
                   </tr>
                 ))}
 
               </tbody>
+
             </table>
           </div>
 
@@ -145,6 +160,77 @@ const UserPage = async () => {
           )}
 
         </div>
+
+        {/* Recent Users */}
+        <section className="mt-10">
+          <div className="mb-4">
+            <h2 className="text-lg font-bold">
+              Recent Users
+            </h2>
+
+            <p className="text-sm text-zinc-500">
+              Recently registered users
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/50">
+
+            {recentUsers.map((user, index) => (
+              <div
+                key={user.id}
+                className={`flex items-center gap-4 p-5 transition hover:bg-zinc-900 ${
+                  index !== recentUsers.length - 1
+                    ? "border-b border-zinc-800"
+                    : ""
+                }`}
+              >
+
+                {/* Avatar */}
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-sm font-bold text-emerald-400">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+
+                {/* User */}
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm font-semibold">
+                    {user.name}
+                  </h3>
+
+                  <p className="mt-1 truncate text-xs text-zinc-500">
+                    {user.email}
+                  </p>
+                </div>
+
+                {/* Role */}
+                <span className="hidden rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-400 sm:block">
+                  {user.role}
+                </span>
+
+                {/* Date */}
+                <div className="flex shrink-0 items-center gap-1.5 text-xs text-zinc-600">
+                  <Clock3 size={13} />
+
+                  {new Date(
+                    user.created_at
+                  ).toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </div>
+
+              </div>
+            ))}
+
+            {recentUsers.length === 0 && (
+              <div className="p-8 text-center text-sm text-zinc-500">
+                Belum ada user.
+              </div>
+            )}
+
+          </div>
+        </section>
+
       </div>
     </div>
   );
