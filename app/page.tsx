@@ -99,36 +99,6 @@ export default async function AdminDashboard() {
 
           </div>
         </header>
-
-
-        {/* Welcome Card */}
-        <section className="relative mb-8 overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-zinc-900 to-zinc-950 p-6 md:p-8">
-
-          <div className="absolute right-[-80px] top-[-80px] h-56 w-56 rounded-full bg-violet-600/10 blur-3xl" />
-
-          <div className="relative">
-
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-400">
-
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-
-              System Online
-
-            </div>
-
-            <h2 className="text-2xl font-bold md:text-3xl">
-              Good evening
-            </h2>
-
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
-              Manage your users, products, and monitor your system
-              activity from one place.
-            </p>
-
-          </div>
-        </section>
-
-
         {/* Statistics */}
         <section className="mb-10">
 
