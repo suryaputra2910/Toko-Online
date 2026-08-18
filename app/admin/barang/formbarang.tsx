@@ -110,70 +110,117 @@ const FormBarang = ({
 
 
             <Modal
-                isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
-                title={id ? "Edit Barang" : "Tambah Barang"}
+    isOpen={isOpen}
+    onClose={() => setIsOpen(false)}
+    title={id ? "Edit Barang" : "Tambah Barang"}
+>
+    <form onSubmit={handleSubmit} className="space-y-4">
+
+        {/* Nama Barang */}
+        <div>
+            <label className="mb-1 block text-sm font-medium text-black">
+                Nama Barang
+            </label>
+
+            <input
+                value={nama}
+                onChange={(e) => setNama(e.target.value)}
+                placeholder="Masukkan nama barang"
+                className="w-full rounded border p-2 text-black"
+            />
+        </div>
+
+        {/* Deskripsi */}
+        <div>
+            <label className="mb-1 block text-sm font-medium text-black">
+                Deskripsi
+            </label>
+
+            <input
+                value={deskripsi}
+                onChange={(e) => setDeskripsi(e.target.value)}
+                placeholder="Masukkan deskripsi barang"
+                className="w-full rounded border p-2 text-black"
+            />
+        </div>
+
+        {/* Harga */}
+        <div>
+            <label className="mb-1 block text-sm font-medium text-black">
+                Harga
+            </label>
+
+            <input
+                value={harga}
+                onChange={(e) => setHarga(Number(e.target.value))}
+                type="number"
+                min="0"
+                placeholder="Masukkan harga barang"
+                className="w-full rounded border p-2 text-black"
+            />
+        </div>
+
+        {/* Stok */}
+        <div>
+            <label className="mb-1 block text-sm font-medium text-black">
+                Stok
+            </label>
+
+            <input
+                value={stok}
+                onChange={(e) => setStok(Number(e.target.value))}
+                type="number"
+                min="0"
+                placeholder="Masukkan jumlah stok"
+                className="w-full rounded border p-2 text-black"
+            />
+        </div>
+
+        {/* Preview gambar saat edit */}
+        {formData?.image && !image && (
+            <div>
+                <label className="mb-1 block text-sm font-medium text-black">
+                    Gambar Saat Ini
+                </label>
+
+                <img
+                    src={`${URL_IMAGE}/${formData.image}`}
+                    alt="Gambar barang"
+                    className="h-24 w-24 rounded object-cover"
+                />
+            </div>
+        )}
+
+        {/* Upload gambar */}
+        <div>
+            <label className="mb-1 block text-sm font-medium text-black">
+                Gambar Barang
+            </label>
+
+            <input
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                    setImage(
+                        e.target.files ? e.target.files[0] : null
+                    )
+                }
+                className="w-full rounded border p-2 text-black"
+            />
+        </div>
+
+        {/* Button */}
+        <div className="flex justify-end">
+            <button
+                type="submit"
+                className="rounded bg-green-500 px-4 py-2 text-white transition hover:bg-green-600"
             >
-                <form onSubmit={handleSubmit} className="space-y-4">
+                Save
+            </button>
+        </div>
 
-                    <input
-                        value={nama}
-                        onChange={(e) => setNama(e.target.value)}
-                        placeholder="Nama Barang"
-                        className="text-black w-full border p-2"
-                    />
-
-                    <input
-                        value={deskripsi}
-                        onChange={(e) => setDeskripsi(e.target.value)}
-                        placeholder="Deskripsi"
-                        className="text-black w-full border p-2"
-                    />
-
-                    <input
-                        value={harga}
-                        onChange={(e) => setHarga(Number(e.target.value))}
-                        type="number"
-                        placeholder="Harga"
-                        className="text-black w-full border p-2"
-                    />
-
-                    <input
-                        value={stok}
-                        onChange={(e) => setStok(Number(e.target.value))}
-                        type="number"
-                        placeholder="Stok"
-                        className="text-black w-full border p-2"
-                    />
-
-
-                    {formData?.image && !image && (
-                        <img
-                            src={`${URL_IMAGE}/${formData.image}`}
-                            className="w-24 h-24 object-cover"
-                        />
-                    )}
-
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                            setImage(e.target.files ? e.target.files[0] : null)
-                        }
-                        className="text-black w-full border p-2"
-                    />
-
-                    <div className="flex justify-end">
-                        <button
-                            type="submit"
-                            className="bg-green-500 text-white p-2 rounded"
-                        >
-                            Save
-                        </button>
-                    </div>
-
-                </form>
-            </Modal>
+    </form>
+</Modal>
 
         </div>
     );
