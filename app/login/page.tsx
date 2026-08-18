@@ -1,95 +1,160 @@
-'use client';
-import { BASE_API_URL } from '@/global';
-import { storeCookie } from "@/lib/client-cookies";
+"use client";
+
+import { BASE_API_URL } from "@/global";
+import { storeCookie } from "@/utils/cookie";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-export interface responseLogin {
-  status: boolean
-  token: string
-  message: string
-  user: User
+
+interface ResponseLogin {
+  status: boolean;
+  message: string;
+  token?: string;
+  user: {
+    role: string;
+  };
 }
 
-export interface User {
-  id: number
-  nama_user: string
-  email: string
-  role: string
-}
+export default function LoginPage() {
+  const router = useRouter();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-const LoginPage = () => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [showPassword, setShowPassword] = useState<boolean>(false);
-    const router = useRouter()
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    const handleSubmit = async (e: FormEvent) => {
-       try {   
-           e.preventDefault()
-           const url = `${BASE_API_URL}/auth/login`
-           const payload = JSON.stringify({ email, password })
-           console.log(payload);
-           const response = await axios.post(url,payload, {
-               headers: {
-                 "Content-Type": "application/json",
-            }, 
-           
-           })
-           const data: responseLogin = response.data
-           if (data.status == true) {              
-               const role = data.user.role
-               if (role === `admin`) {
-                 toast(data.message, { hideProgressBar: true, containerId: `toastLogin`, type: "success", autoClose: 2000 })
-                 storeCookie("token", data?.token||'')
-                 storeCookie("role", data?.user.role||'')
-               setTimeout(() => router.replace(`/`),1000)
-               }
-               
-               else if(role === `user`) {
-                toast('anda bukan admin ', {hideProgressBar: true, containerId:`toastLogin`, type:"warning", autoClose: 2000})
-                storeCookie("token", data?.token||'')
-                storeCookie("role", data?.user.role||'')
-                setTimeout(() => router.replace(`/`),1000)
-               }
-           }
-           
-           else toast(data.message, { hideProgressBar: true, containerId: `toastLogin`, type: "warning" })
-       } catch (error) {
-           console.log(error);
-           toast(`Something wrong`, { hideProgressBar: true, containerId: `toastLogin`, type: "error" })
-       }
-   }
+    try {
+      const url = `${BASE_API_URL}/auth/login`;
+
+      const response = await axios.post(
+        url,
+        {
+          email,
+          password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data: ResponseLogin = response.data;
+
+      console.log("LOGIN RESPONSE:", data);
+
+      if (data.status === true) {
+        const role = data.user.role;
+
+        // Simpan token dan role
+        storeCookie("token", data.token || "");
+        storeCookie("role", role || "");
+
+        if (role === "admin") {
+          toast.success(data.message, {
+            containerId: "toastLogin",
+            autoClose: 1000,
+          });
+
+          setTimeout(() => {
+            router.replace("/admin/dashboard");
+          }, 1000);
+
+          return;
+        }
+
+        if (role === "user") {
+          toast.warning("Anda bukan admin", {
+            containerId: "toastLogin",
+            autoClose: 2000,
+          });
+
+          return;
+        }
+      }
+
+      toast.warning(data.message || "Login gagal", {
+        containerId: "toastLogin",
+      });
+    } catch (error) {
+      console.error("LOGIN ERROR:", error);
+
+      toast.error("Email atau password salah", {
+        containerId: "toastLogin",
+      });
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-         <ToastContainer containerId={`toastLogin`} />
-        <div className="w-3/6 p-8 bg-white rounded-3xl shadow-md">
-            <h1 className="text-2xl font-bold mb-4 text-black">Admin Login</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label className="block text-black mb-2" htmlFor="email">Email</label>
-                    <input className="w-full p-2 border rounded-full text-black border-gray-300 rounded" type="email" id="email" name="email" onChange={e => setEmail(e.target.value)} />
-                </div>
-                <div className="mb-6">
-                    <label className="block text-black mb-2" htmlFor="password">Password</label>
-                    <input className="w-full p-2 border rounded-full text-black border-gray-300 rounded" type="password" id="password" name="password" onChange={e => setPassword(e.target.value)} />
-                </div>
-                <div>
-                    
-                    <button className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" type="submit">Login</button>
-                <p className="mt-4 text-center text-gray-600">Already haven't an account? 
-                    <Link href="register" className="text-blue-500 hover:underline">Register here</Link>
-                </p>
-                </div>
-            </form>
-        </div>
+    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <ToastContainer containerId="toastLogin" />
+
+      <div className="w-3/6 rounded-3xl bg-white p-8 shadow-md">
+        <h1 className="mb-4 text-2xl font-bold text-black">
+          Admin Login
+        </h1>
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="mb-2 block text-black">
+              Email
+            </label>
+
+            <input
+              className="w-full rounded-full border border-gray-300 p-2 text-black"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="mb-2 block text-black">
+              Password
+            </label>
+
+            <input
+              className="w-full rounded-full border border-gray-300 p-2 text-black"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
+            type="submit"
+          >
+            Login
+          </button>
+
+          <p className="mt-4 text-center text-gray-600">
+            Belum punya akun?{" "}
+            <Link
+              href="/register"
+              className="text-blue-500 hover:underline"
+            >
+              Register
+            </Link>
+          </p>
+        </form>
+        <div className="mb-5 mt-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+  <p className="font-semibold">Test Account</p>
+
+  <p className="mt-1">
+    Email: <span className="font-mono">prima@gmail.com</span>
+  </p>
+
+  <p>
+    Password: <span className="font-mono">123</span>
+  </p>
+</div>
+      </div>
     </div>
-  )
-};
-
-
-export default LoginPage;
+  );
+}
